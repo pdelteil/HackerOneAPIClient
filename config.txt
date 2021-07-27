@@ -1,0 +1,5 @@
+usernameTesting=""
+apikeyTesting=""
+usernameProduction=""
+apikeyProduction=""
+
