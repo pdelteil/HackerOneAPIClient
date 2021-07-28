@@ -9,15 +9,15 @@ if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]
     #production mode runs the API call against your real real real account (be careful)
     #testing mode runs the API call against a testing program created in the sandbox
     #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
-    echo "Use ${FUNCNAME[0]} programName vulnerableDomain (test mode: -t, -p is production mode, -d is dry run mode ) bug "
+    echo "Use ${FUNCNAME[0]} (test mode: -t, -p is production mode, -d is dry run mode) programName vulnerableDomain bug "
     echo "Example ${FUNCNAME[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
     exit;
 fi
 
 #input params
-program=$1
-domain=$2
-mode=$3
+mode=$1
+program=$2
+domain=$3
 bug=$4
 
 #global vars
