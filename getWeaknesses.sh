@@ -1,4 +1,5 @@
-# You can also use wget
+#This call will retrieve the weaknesses related to a program
+
 program=$1
 #load credentials
 . ./config.txt
