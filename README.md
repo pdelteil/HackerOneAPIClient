@@ -7,7 +7,7 @@
 </p>
 
 
-The main idea of this project is to send reports automatically (or programmaticallys, some day automagically) to HackerOne programs.  
+The main idea of this project is to send reports automatically (or programmatically, some day automagically) to HackerOne programs.  
 
 ## Configuration 
 
