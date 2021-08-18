@@ -72,12 +72,30 @@ then
     url="$5"
     title='Open redirect ['$domain']'    
     bodySummary="There is an open redirection vulnerability that allows an attacker to redirect anyone to malicious sites.\n\n"
-    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url" As you can see it redirects to https://www.evil.com"
+    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url" \n\nAs you can see it redirects to https://www.evil.com"
 
     body="$bodySummary$bodyStepsToRep"
     impact="Attackers can serve malicious websites that steal passwords or download ransomware to their victims machine due to a redirect.\nThey can also use the URL to trick users into revealing their public IP address.\n"
     severity="low"
     weaknessId=53
+
+#generic reflected xss bug
+elif [ "$bug" == "xss" ] 
+then
+    if [ -z "$5" ]
+    then
+        echo "For this bug you need to include the full URL"
+        exit
+
+    fi 
+    url="$5"
+    title='Reflected XSS ['$domain']'    
+    bodySummary="Reflected cross-site scripting (XSS) arises when an application receives data in an HTTP request and includes that data within the immediate response in an unsafe way. An attacker can execute JavaScript arbitrary code on the victim's session.\n"
+    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url
+    body="$bodySummary$bodyStepsToRep"
+    impact="- Perform any action within the application that the user can perform.\n- View any information that the user is able to view.\n- Modify any information that the user is able to modify.\n- Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.\n- Steal user's cookie. "
+    severity="medium"
+    weaknessId=61
 else
     echo "$bug, Bug type not found"
     exit

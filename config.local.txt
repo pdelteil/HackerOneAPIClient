@@ -1,0 +1,8 @@
+apikeyTesting="krHYwAcddtLlO7RerCk4viwQyUz7EeDdmLAjUC33Ww8="
+usernameTesting="pdelteil"
+usernameProduction="fdeleite"
+apikeyProduction="83a7s1WoLXM86UGbuUYeojsv8QmITYPkQJp99hmVjbc="
+#URL where reports are hosted  (http://domain/folder)
+reportsURL="http://www.info-sec.cl/pocs"
+postXSStemplate="post-xss.template.html"
+webPath="/var/www/html/pocs"
