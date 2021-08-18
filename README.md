@@ -7,7 +7,7 @@
 </p>
 
 
-The main idea of this project is to send reports automatically (or programmaticallys, some day automagically) to HackerOne programs.  
+The main idea of this project is to send reports automatically (or programmatically, some day automagically) to HackerOne programs.  
 
 ## Configuration 
 
@@ -56,6 +56,7 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 ## Supported bugs  
 
 - Generic Open Redirect 
+- Generic Reflected XSS
 - PhpMyAdmin CVE-2019-12616
 - CVE-2020-3580
 
