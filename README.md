@@ -56,6 +56,7 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 ## Supported bugs  
 
 - Generic Open Redirect 
+- Generic Reflected XSS
 - PhpMyAdmin CVE-2019-12616
 - CVE-2020-3580
 
