@@ -15,7 +15,7 @@ Setup your HackerOne username and APIkey into the config.txt file.
 
 Get your API Key [here](https://docs.hackerone.com/hackers/api-token.html)
 
-Create a dummy project [here](https://hackerone.com/teams/new) (I recommend you to also create another h1 account) 
+Create a dummy project [here](https://hackerone.com/teams/new) (I recommend you to also create another h1 account, otherwise you might have too many reports and reports sent to your dummy program cannot be deleted) 
 
 ## How to use 
 
