@@ -69,5 +69,5 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox seccion. If you filter by weakness you will see the ID in the resulting the URL of the filter.  
 
 ## TODO
-- Define in a template file every bug definition. 
+- Use yaml to define every type of bug. (Just like nuclei templates) 
 - Take screenshots of vulnerable URLS to be inclued in the reports. This could be solved using Google Photos API and then include the URL in the report.
