@@ -50,6 +50,7 @@ Some reports have extra parameters, like 'open redirect' that needs the full vul
  `./createReports.sh -d prueba_h1b vulnerable.com CVE-2020-3580`
  
 - Creating a report of **Generic Reflected XSS** to program prueba_h1b (dry run mode). 
+
   `./createReports.sh -d prueba_h1b target.domain.com xss "https://target.domain/XXS_payload"`
 
 ## More templates? 
