@@ -21,7 +21,7 @@ Create a dummy project [here](https://hackerone.com/teams/new) (I recommend you 
 
 ### createReport 
 
-The basic use is as follows 
+The basic use is as follows:
 
 `./createReports.sh -mode programName domain bug`
 
@@ -29,7 +29,7 @@ Mode as 3 possible values
 flag| Meaning  | Explanation |
 |---|---|---|
 -d | Dry-run mode| Won't make the API call at the end. Just to check parameters and request formation. 
--t | Testing mode| Send reports to a dummy project (usernameTesting and apikeyTesting values are going to be used from the config file) 
+-t | Testing mode| Send reports to a dummy project (*usernameTesting* and *apikeyTesting* values are going to be used from the config file) 
 -p | Production mode| after you tested your reports agains a dummy project, you are ready to finally report them! 
 
 Some reports have extra parameters, like 'open redirect' that needs the full vulnerable URL to be added as last parameter. 
