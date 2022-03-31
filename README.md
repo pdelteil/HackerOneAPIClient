@@ -30,9 +30,9 @@ flag| Meaning  | Explanation |
 |---|---|---|
 -d | Dry-run mode| Won't make the API call at the end. Just to check parameters and request formation. 
 -t | Testing mode| Send reports to a dummy project (*usernameTesting* and *apikeyTesting* values are going to be used from the config file) 
--p | Production mode| after you tested your reports agains a dummy project, you are ready to finally report them! 
+-p | Production mode| Use production mode after you tested your reports against a dummy project, then you are ready to finally report them! 
 
-Some reports have extra parameters, like 'open redirect' that needs the full vulnerable URL to be added as last parameter. 
+Some reports have extra parameters, like *open redirect* that needs the full vulnerable URL to be added as last parameter. 
 
 
 #### Examples
