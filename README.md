@@ -70,7 +70,7 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 - I still don't know how to inject markdown code into the template. 
 - I was using a dummy program in my primary account but then I couldn't remove the reports sent. I recommend you to create a dummy program in a secondary account. 
 - I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. 
-A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox seccion. If you filter by weakness you will see the ID in the resulting the URL of the filter.  
+A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.  
 
 ## TODO
 - Use yaml to define every type of bug. (Just like nuclei templates) 
