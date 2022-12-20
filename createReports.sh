@@ -4,14 +4,13 @@
 #load credentials and other params
 . ./config.local.txt
 
-if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]
-    then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     #production mode runs the API call against your real real real account (be careful)
     #testing mode runs the API call against a testing program created in the sandbox
     #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
     echo "Use ${FUNCNAME[0]} (test mode: -t, -p is production mode, -d is dry run mode) programName vulnerableDomain bug "
     echo "Example ${FUNCNAME[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
-    exit;
+    return 1
 fi
 
 #input params
@@ -25,8 +24,7 @@ apiEndpoint="https://api.hackerone.com/v1/hackers/reports"
 
 #TODO define this as a file template (yaml maybe?)
 # creates a report for CVE-2020-3580
-if [ "$bug" == "CVE-2020-3580" ]
-then
+if [[ "$bug" == "CVE-2020-3580" ]]; then
     #check config file for details
     #name of the resulting POC file
     file="post-xss-$domain.html"
@@ -44,12 +42,10 @@ then
     weaknessId=61
 
 #phpmyadmin CVE-2019-12616
-elif [ "$bug" == "CVE-2019-12616" ] 
-then
-    if [ -z "$5" ]
-    then
+elif [[ "$bug" == "CVE-2019-12616" ]]; then
+    if [[ -z "$5" ]]; then
         echo "For this bug you need to include the version of the PhpMyAdmin instance"
-        exit
+        return 1
     fi
     #specific phpmyin version to be added to the report
     version="$5"
@@ -61,13 +57,10 @@ then
     weaknessId=45
 
 #generic open redirect bug
-elif [ "$bug" == "open-redirect" ] 
-then
-    if [ -z "$5" ]
-    then
+elif [[ "$bug" == "open-redirect" ]]; then
+    if [[ -z "$5" ]; then
         echo "For this bug you need to include the full URL (use evil.com)"
-        exit
-
+        return 1
     fi 
     url="$5"
     title='Open redirect ['$domain']'    
@@ -80,13 +73,10 @@ then
     weaknessId=53
 
 #generic reflected xss bug
-elif [ "$bug" == "xss" ] 
-then
-    if [ -z "$5" ]
-    then
+elif [[ "$bug" == "xss" ]]; then
+    if [[ -z "$5" ]]; then
         echo "For this bug you need to include the full URL"
-        exit
-
+        return 1
     fi 
     url="$5"
     title='Reflected XSS ['$domain']'    
@@ -98,7 +88,7 @@ then
     weaknessId=61
 else
     echo "$bug, Bug type not found"
-    exit
+    return 1 
 fi 
 
 data='{"data": {"type": "report",
@@ -113,25 +103,22 @@ data='{"data": {"type": "report",
 #TODO parse api response
 
 #dry run mode
-if [ "$mode" == "-d" ]
-then
-	echo "Running in dry-run mode"
+if [[ "$mode" == "-d" ]]; then
+    echo "Running in dry-run mode"
     echo $data
     echo "$reportsURL"
     echo "Credentials: "$usernameTesting:$apikeyTesting
     echo "Credentials: "$usernameProduction:$apikeyProduction
-    exit
+    return 1
 fi
 #production mode
-if [ "$mode" == "-p" ]
-then
+if [[ "$mode" == "-p" ]]; then
     echo "Running in production mode"
     echo "Making API call"
     curl $apiEndpoint -u "$usernameProduction:$apikeyProduction" -H 'Content-Type: application/json' -H 'Accept: application/json' -d "$data"
 fi 
 #testing mode
-if [ "$mode" == "-t" ]
-then
+if [[ "$mode" == "-t" ]]; then
     echo "Running in testing mode"
     echo "Making API call"
     curl $apiEndpoint -u "$usernameTesting:$apikeyTesting" -H 'Content-Type: application/json' -H 'Accept: application/json' -d "$data"
