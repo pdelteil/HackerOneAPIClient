@@ -1,8 +1,8 @@
-#in order to run this script properly you need to define your username and api keys in config.txt
+#in order to run this script properly you need to define your username and api keys in config.ini
 #using export username and apikey
 
 #load credentials and other params
-. ./config.local.txt
+source ./config.ini
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     #production mode runs the API call against your real real real account (be careful)

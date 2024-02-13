@@ -2,9 +2,9 @@
 
 program=$1
 #load credentials
-. ./config.txt
+source ./config.ini
 
-curl "https://api.hackerone.com/v1/hackers/programs/$program/weaknesses" \
+curl -s "https://api.hackerone.com/v1/hackers/programs/$program/weaknesses" \
   -X GET \
   -u "$usernameProduction:$apikeyProduction" \
   -H 'Accept: application/json'
