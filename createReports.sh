@@ -10,7 +10,8 @@ if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
     echo "Use ${FUNCNAME[0]} (test mode: -t, -p is production mode, -d is dry run mode) programName vulnerableDomain bug "
     echo "Example ${FUNCNAME[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
-    return 1
+    #return 1
+-    exit 1
 fi
 
 #input params
@@ -58,7 +59,7 @@ elif [[ "$bug" == "CVE-2019-12616" ]]; then
 
 #generic open redirect bug
 elif [[ "$bug" == "open-redirect" ]]; then
-    if [[ -z "$5" ]; then
+    if [[ -z "$5" ]]; then
         echo "For this bug you need to include the full URL (use evil.com)"
         return 1
     fi 
@@ -86,6 +87,16 @@ elif [[ "$bug" == "xss" ]]; then
     impact="- Perform any action within the application that the user can perform.\n- View any information that the user is able to view.\n- Modify any information that the user is able to modify.\n- Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.\n- Steal user's cookie. "
     severity="medium"
     weaknessId=61
+#s3 subdomain takeover
+elif [[ "$bug" == "s3takeover" ]]; then
+    url="https://$domain/index.html"
+    title='S3 takeover ['$domain']'    
+    bodySummary="The subdomain $domain was pointed using CNAME to Amazon S3, but no bucket with that name was registered. This meant that anyone could sign up for Amazon S3, claim the bucket as their own and then serve content on $domain \n"
+    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url
+    body="$bodySummary$bodyStepsToRep"
+    impact="- It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the $domain domain. This would allow them to post malicious content which would be mistaken for a valid site.\n"
+    severity="high"
+    weaknessId=61 #145
 else
     echo "$bug, Bug type not found"
     return 1 
@@ -106,10 +117,10 @@ data='{"data": {"type": "report",
 if [[ "$mode" == "-d" ]]; then
     echo "Running in dry-run mode"
     echo $data
-    echo "$reportsURL"
+    echo "reports URL from config.ini $reportsURL"
     echo "Credentials: "$usernameTesting:$apikeyTesting
     echo "Credentials: "$usernameProduction:$apikeyProduction
-    return 1
+    exit 1
 fi
 #production mode
 if [[ "$mode" == "-p" ]]; then
