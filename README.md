@@ -52,6 +52,9 @@ Some reports have extra parameters, like *open redirect* that needs the full vul
 - Creating a report of **Generic Reflected XSS** to program prueba_h1b (dry run mode). 
 
   `./createReports.sh -d prueba_h1b target.domain.com xss "https://target.domain/XXS_payload"`
+  
+- Creating a report of **S3 bucket takeover** to program prueba_h1b (dry run mode)
+  `./createReports.sh -d prueba_h1b target.domain.com s3takeover`
 
 ## More templates? 
 I created [this](https://github.com/pdelteil/bugBountyTemplates) project with all the templates I've used. The templates were filled manually but I will migrate them to this project. (eventually) 
@@ -63,14 +66,15 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 - Generic Reflected XSS
 - PhpMyAdmin CVE-2019-12616
 - CVE-2020-3580
+- S3 takeover 
 
 ## Problems 
 
 - HackerOne's API documentation is awful. There are not many examples. I hate that. 
 - I still don't know how to inject markdown code into the template. 
 - I was using a dummy program in my primary account but then I couldn't remove the reports sent. I recommend you to create a dummy program in a secondary account. 
-- I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. 
-A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.  
+- I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.
+- Not all programs have the same weaknesses, you may encounter a 500 error if you send a weakness id that the program doesn't have (this is really silly).
 
 ## TODO
 - Use yaml to define every type of bug. (Just like nuclei templates) 
