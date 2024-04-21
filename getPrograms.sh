@@ -2,6 +2,8 @@
 
 source ./config.ini 
 
+#username=$usernameTesting
+#password=$apikeyTesting
 username=$usernameProduction
 password=$apikeyProduction
 api_url="https://api.hackerone.com/v1/hackers/programs"
