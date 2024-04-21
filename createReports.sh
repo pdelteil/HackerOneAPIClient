@@ -10,8 +10,7 @@ if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
     #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
     echo "Use ${FUNCNAME[0]} (test mode: -t, -p is production mode, -d is dry run mode) programName vulnerableDomain bug "
     echo "Example ${FUNCNAME[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
-    #return 1
--    exit 1
+    exit 1
 fi
 
 #input params
@@ -46,7 +45,7 @@ if [[ "$bug" == "CVE-2020-3580" ]]; then
 elif [[ "$bug" == "CVE-2019-12616" ]]; then
     if [[ -z "$5" ]]; then
         echo "For this bug you need to include the version of the PhpMyAdmin instance"
-        return 1
+        exit 1
     fi
     #specific phpmyin version to be added to the report
     version="$5"
@@ -61,7 +60,7 @@ elif [[ "$bug" == "CVE-2019-12616" ]]; then
 elif [[ "$bug" == "open-redirect" ]]; then
     if [[ -z "$5" ]]; then
         echo "For this bug you need to include the full URL (use evil.com)"
-        return 1
+        exit 1
     fi 
     url="$5"
     title='Open redirect ['$domain']'    
@@ -77,7 +76,7 @@ elif [[ "$bug" == "open-redirect" ]]; then
 elif [[ "$bug" == "xss" ]]; then
     if [[ -z "$5" ]]; then
         echo "For this bug you need to include the full URL"
-        return 1
+        exit 1
     fi 
     url="$5"
     title='Reflected XSS ['$domain']'    
@@ -97,9 +96,26 @@ elif [[ "$bug" == "s3takeover" ]]; then
     impact="- It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the $domain domain. This would allow them to post malicious content which would be mistaken for a valid site.\n"
     severity="high"
     weaknessId=61 #145
+
+#XSS Swagger UI
+elif [[ "$bug" == "xssSwagger" ]]; then
+    #input
+    if [[ -z "$5" ]]; then
+        echo "For this bug you need to include the full URL"
+        exit 1
+    fi 
+
+    url="$5"
+    title='XSS in Swagger ['$domain']'    
+    bodySummary="Reflected Cross-Site Scripting (XSS) is a type of injection attack where malicious JavaScript code is injected into a website. When a user visits the affected web page, the JavaScript code executes and its input is reflected in the user's browser. Reflected XSS can be found on this domain which allows an attacker to create a crafted URL which when opened by a user will execute arbitrary Javascript within that user's browser in the context of this domain."
+    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n$url\nObserve the JavaScript payload being executed:"
+    body="$bodySummary$bodyStepsToRep"
+    impact="Reflected XSS could lead to data theft through the attacker’s ability to manipulate data through their access to the application, and their ability to interact with other users, including performing other malicious attacks, which would appear to originate from a legitimate user.\nBecause it's a Swagger software, it's possible for an attacker to steal the user's api keys/credentials to execute API calls and obtain sensitive information." 
+    severity="medium"
+    weaknessId=61 #145
 else
     echo "$bug, Bug type not found"
-    return 1 
+    exit 1 
 fi 
 
 data='{"data": {"type": "report",
@@ -107,6 +123,7 @@ data='{"data": {"type": "report",
        "team_handle": "'$program'",
        "title": "'$title'",
        "vulnerability_information": "'$body'",
+       "severity": "'$severity'",
        "weakness_id": '$weaknessId',
        "impact": "'$impact'"}}}'
 #debug
@@ -116,7 +133,7 @@ data='{"data": {"type": "report",
 #dry run mode
 if [[ "$mode" == "-d" ]]; then
     echo "Running in dry-run mode"
-    echo $data
+    echo $data|jq
     echo "reports URL from config.ini $reportsURL"
     echo "Credentials: "$usernameTesting:$apikeyTesting
     echo "Credentials: "$usernameProduction:$apikeyProduction
