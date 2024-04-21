@@ -66,7 +66,8 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 - Generic Reflected XSS
 - PhpMyAdmin CVE-2019-12616
 - CVE-2020-3580
-- S3 takeover 
+- S3 takeover
+- XSS in Swagger UI
 
 ## Problems 
 
