@@ -86,6 +86,7 @@ elif [[ "$bug" == "xss" ]]; then
     impact="- Perform any action within the application that the user can perform.\n- View any information that the user is able to view.\n- Modify any information that the user is able to modify.\n- Initiate interactions with other application users, including malicious attacks, that will appear to originate from the initial victim user.\n- Steal user's cookie. "
     severity="medium"
     weaknessId=61
+
 #s3 subdomain takeover
 elif [[ "$bug" == "s3takeover" ]]; then
     url="https://$domain/index.html"
@@ -126,28 +127,31 @@ data='{"data": {"type": "report",
        "severity_rating": "'$severity'",
        "weakness_id": '$weaknessId',
        "impact": "'$impact'"}}}'
-#debug
-#echo $data
+
 #TODO parse api response
 
 #dry run mode
 if [[ "$mode" == "-d" ]]; then
     echo "Running in dry-run mode"
     echo $data|jq
-    echo "reports URL from config.ini $reportsURL"
+    #echo "reports URL from config.ini $reportsURL"
     echo "Credentials: "$usernameTesting:$apikeyTesting
     echo "Credentials: "$usernameProduction:$apikeyProduction
-    exit 1
 fi
 #production mode
 if [[ "$mode" == "-p" ]]; then
-    echo "Running in production mode"
+    echo -e "\033[0;31mRunning in production mode\033[0m"
     echo "Making API call"
-    curl $apiEndpoint -u "$usernameProduction:$apikeyProduction" -H 'Content-Type: application/json' -H 'Accept: application/json' -d "$data"
+    curl $apiEndpoint -u "$usernameProduction:$apikeyProduction" \
+                      -H 'Content-Type: application/json' \
+                      -H 'Accept: application/json' -d "$data"|jq
 fi 
 #testing mode
 if [[ "$mode" == "-t" ]]; then
-    echo "Running in testing mode"
+    echo -e "\033[0;33mRunning in testing mode\033[0m"
     echo "Making API call"
-    curl $apiEndpoint -u "$usernameTesting:$apikeyTesting" -H 'Content-Type: application/json' -H 'Accept: application/json' -d "$data"
+    curl $apiEndpoint -u "$usernameTesting:$apikeyTesting" \
+                      -H 'Content-Type: application/json' \
+                      -H 'Accept: application/json' -d "$data"|jq
 fi 
+
