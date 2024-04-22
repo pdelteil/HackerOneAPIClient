@@ -108,7 +108,7 @@ elif [[ "$bug" == "xssSwagger" ]]; then
     url="$5"
     title='XSS in Swagger ['$domain']'    
     bodySummary="Reflected Cross-Site Scripting (XSS) is a type of injection attack where malicious JavaScript code is injected into a website. When a user visits the affected web page, the JavaScript code executes and its input is reflected in the user's browser. Reflected XSS can be found on this domain which allows an attacker to create a crafted URL which when opened by a user will execute arbitrary Javascript within that user's browser in the context of this domain."
-    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n$url\nObserve the JavaScript payload being executed:"
+    bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n$url\nObserve the JavaScript payload being executed."
     body="$bodySummary$bodyStepsToRep"
     impact="Reflected XSS could lead to data theft through the attacker’s ability to manipulate data through their access to the application, and their ability to interact with other users, including performing other malicious attacks, which would appear to originate from a legitimate user.\nBecause it's a Swagger software, it's possible for an attacker to steal the user's api keys/credentials to execute API calls and obtain sensitive information." 
     severity="medium"
@@ -123,7 +123,7 @@ data='{"data": {"type": "report",
        "team_handle": "'$program'",
        "title": "'$title'",
        "vulnerability_information": "'$body'",
-       "severity": "'$severity'",
+       "severity_rating": "'$severity'",
        "weakness_id": '$weaknessId',
        "impact": "'$impact'"}}}'
 #debug
