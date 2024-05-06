@@ -73,6 +73,7 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 - CVE-2020-3580
 - S3 takeover
 - XSS in Swagger UI
+- Azure Cloud App subdomain takeover
 
 ## Problems 
 
