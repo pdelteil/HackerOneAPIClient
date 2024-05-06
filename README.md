@@ -56,6 +56,9 @@ Some reports have extra parameters, like *open redirect* that needs the full vul
 - Creating a report of **S3 bucket takeover** to program prueba_h1b (dry run mode)
   `./createReports.sh -d prueba_h1b target.domain.com s3takeover`
 
+  - Creating a report of **Azure Cloud App subdomain takeover** to program prueba_h1b (dry run mode)
+  `./createReports.sh -d prueba_h1b target.domain.com azureCloudAppSto https://web.archive.org/web/20240506140901/https://target.domain.com/ cname.target.domain.com`
+
 ## More templates? 
 I created [this](https://github.com/pdelteil/bugBountyTemplates) project with all the templates I've used. The templates were filled manually but I will migrate them to this project. (eventually) 
 
