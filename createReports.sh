@@ -33,9 +33,6 @@ else
 
 fi
 
-#global vars
-apiEndpoint="https://api.hackerone.com/v1/hackers/reports"
-
 #TODO define this as a file template (yaml maybe?)
 # creates a report for CVE-2020-3580
 if [[ "$bug" == "CVE-2020-3580" ]]; then
