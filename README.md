@@ -77,10 +77,10 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 
 ## Problems 
 
-- HackerOne's API documentation is awful. There are not many examples. I hate that. 
+- HackerOne's API documentation is awful. There are not many examples. I hate that.
+- Not all programs have the same weaknesses, you may encounter a 500 error if you send a weakness id that the program doesn't have (this is really silly).
 - ~~I still don't know how to inject markdown code into the template.~~
 - ~~I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.~~
-- Not all programs have the same weaknesses, you may encounter a 500 error if you send a weakness id that the program doesn't have (this is really silly).
 
 ## TODO
 - Use yaml to define every type of bug. (Just like nuclei templates) 
