@@ -25,7 +25,7 @@ The basic use is as follows:
 
 `./createReports.sh -mode programName domain bug`
 
-Mode as 3 possible values
+Mode has 3 possible values:
 flag| Meaning  | Explanation |
 |---|---|---|
 -d | Dry-run mode| Won't make the API call at the end. Just to check parameters and request formation. 
