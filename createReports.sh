@@ -5,13 +5,17 @@
 source ./config.ini
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
-    #production mode runs the API call against your real real real account (be careful)
-    #dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1
     echo -e "Use: \n -t test mode\n testing mode runs the API call against a testing program created in the sandbox\n ${BASH_SOURCE[0]} -t vulnerableDomain bug"
+    #example
+    
+    echo -e "\n-d dry-run mode does not run the API call. Useful to debug the parameters without sending anything to H1\n ${BASH_SOURCE[0]} -d programName vulnerableDomain bug"
+    echo -e "\n-p Use production mode after you tested your reports against a dummy project, then you are ready to finally report them! \n ${BASH_SOURCE[0]} -p programName vulnerableDomain bug"
+    
+    #production mode runs the API call against your real account (be careful)
     # -p is production mode \n -d is dry run mode \n programName vulnerableDomain bug "
     #echo "Example {BASH_SOURCE[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
-    bugs="\nSupported bugs:\n Cisco POST XSS (CVE-2020-3580)\n phpmyadmin CSRF (CVE-2019-12616)\n open redirect (open-redirect)\n \
-          generic xss (xss)\n s3 subdomain takeover (s3takeover)\n XSS Swagger UI (xssSwagger)\n Azure cloudapp subdomain takeover (azureCloudAppSto)"
+    bugs="\nSupported bugs (bug_code): \n Cisco POST XSS (CVE-2020-3580)\n phpmyadmin CSRF (CVE-2019-12616)\n open redirect (open-redirect)\n \
+          generic xss (xss)\n s3 subdomain takeover (s3takeover)\n XSS Swagger UI (xssSwagger)\n Azure cloudapp subdomain takeover (azureCloudAppSto)\n Azure DNS Takeover (azure-dns)"
     echo -e $bugs
     exit 1
 fi
@@ -21,9 +25,7 @@ mode=$1
 if [[ "$mode" == "-t" ]]; then
     #from config file 
     program=$testProgram
-    echo "Parameters: $@"
     set -- "$1" "" "$2" "$3" "$4" "$5"
-    echo "Updated parameters: $@"
     domain=$3
     bug=$4
 else
@@ -76,7 +78,7 @@ elif [[ "$bug" == "open-redirect" ]]; then
         exit 1
     fi 
     url="$5"
-    title='Open redirect ['$domain']'    
+    title='Open redirect ['$domain']'
     bodySummary="There is an open redirection vulnerability that allows an attacker to redirect anyone to malicious sites.\n\n"
     bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url" \n\nAs you can see it redirects to https://www.evil.com"
 
@@ -92,7 +94,7 @@ elif [[ "$bug" == "xss" ]]; then
         exit 1
     fi 
     url="$5"
-    title='Reflected XSS ['$domain']'    
+    title='Reflected XSS ['$domain']'
     bodySummary="Reflected cross-site scripting (XSS) arises when an application receives data in an HTTP request and includes that data within the immediate response in an unsafe way. An attacker can execute JavaScript arbitrary code on the victim's session.\n"
     bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url
     body="$bodySummary$bodyStepsToRep"
@@ -103,13 +105,26 @@ elif [[ "$bug" == "xss" ]]; then
 #s3 subdomain takeover
 elif [[ "$bug" == "s3takeover" ]]; then
     url="https://$domain/index.html"
-    title='S3 takeover ['$domain']'    
+    title='S3 takeover ['$domain']'
     bodySummary="The subdomain $domain was pointed using CNAME to Amazon S3, but no bucket with that name was registered. This meant that anyone could sign up for Amazon S3, claim the bucket as their own and then serve content on $domain \n"
     bodyStepsToRep="Steps To Reproduce\n\n Go to this URL:\n"$url
     body="$bodySummary$bodyStepsToRep"
     impact="- It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the $domain domain. This would allow them to post malicious content which would be mistaken for a valid site.\n"
     s*everity="high"
     weaknessId=61
+
+#DNS azure takeover
+#input program domain bug 
+elif [[ "$bug" == "azure-dns" ]]; then
+    pocDomain="poc.$domain"
+    title='Azure DNS takeover ['$domain']'
+    bodySummary="Note: This is not a regular subdomain takeover but a NS/DNS takeover. \n\n A DNS takeover occurs when an attacker can take control of any DNS server in the chain of DNS servers responsible for resolving a hostname.\nThis was possible because the vulnerable zone/domain was pointing to Azure DNS service (using name servers  \`ns*-*.azure-dns.*\`) but the zone was not created.\n\nA bonus would be advice, since performing this take over has a cost in Azure cloud. \n\n"
+    bodyStepsToRep="## Steps To Reproduce\n\n In order to create the POC I added the subdomain \`poc\` to \`$domain\` with a TXT record.\n Run \`dig txt $pocDomain +noall +answer\`\n\nCheck the following output: \n\`$pocDomain 3600 IN TXT 'DNS Zone Takeover POC Deleite'\`\n\n A more impactful POC is possible registering a mail service using the subdomain."
+    body="$bodySummary$bodyStepsToRep"
+    impact="The impact is high as an attacker could create any subdomain with any content. This would allow them to post malicious content which would be mistaken for a valid site.\nBecause the attacker controls de DNS manager, TXT and MX records can be created, therefore allowing the use of \`$domain\` as email sender. \nThreat actors could perform several attacks:\n\n  -  Cookie Stealing\n  -  Phishing campaigns.\n  -  Bypass Content-Security Policies and CORS."
+    severity="high"
+    #misconfiguration (CWE-16)
+    weaknessId=26
 
 #XSS Swagger UI
 elif [[ "$bug" == "xssSwagger" ]]; then
@@ -165,7 +180,6 @@ data='{"data": {"type": "report",
        "severity_rating": "'$severity'",
        "weakness_id": '$weaknessId',
        "impact": "'$impact'\n\n'$disclaimer'"}}}'
-
 #TODO parse api response
 
 #dry run mode
@@ -175,22 +189,25 @@ if [[ "$mode" == "-d" ]]; then
     #echo "reports URL from config.ini $reportsURL"
     echo "Credentials: "$usernameTesting:$apikeyTesting
     echo "Credentials: "$usernameProduction:$apikeyProduction
+    exit 1
 fi
+
 #production mode
 if [[ "$mode" == "-p" ]]; then
     echo -e "\033[0;31mRunning in production mode\033[0m"
-    echo "Making API call"
-    curl $apiEndpoint -u "$usernameProduction:$apikeyProduction" \
-                      -H 'Content-Type: application/json' \
-                      -H 'Accept: application/json' -d "$data"|jq
-fi 
+    username=$usernameProduction
+    apikey=$apikeyProduction
+fi
+
 #testing mode
 if [[ "$mode" == "-t" ]]; then
     echo -e "\033[0;33mRunning in testing mode\033[0m\n"
     echo "Program: $program"
-    echo "Making API call"
-    curl $apiEndpoint -u "$usernameTesting:$apikeyTesting" \
-                      -H 'Content-Type: application/json' \
-                      -H 'Accept: application/json' -d "$data"|jq
+    username=$usernameTesting
+    apikey=$apikeyTesting
 fi 
-
+echo "Making API call"
+echo "If error 500 check weakness"
+curl -s $apiEndpoint/reports -u "$username:$apikey" \
+                  -H 'Content-Type: application/json' \
+                  -H 'Accept: application/json' -d "$data"|jq
