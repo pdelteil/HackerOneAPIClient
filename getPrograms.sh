@@ -15,7 +15,7 @@ echo "Handle, Name,Submission State, URL"
 url="https://hackerone.com"
 
 while true; do
-    response=$(curl -s -u "$username:$password" -H 'Accept: application/json' "$apiEndpoint?page\[size\]=$page_size&page\[number\]=$page_number" )
+    response=$(curl -s -u "$username:$password" -H 'Accept: application/json' "$apiEndpoint/programs?page\[size\]=$page_size&page\[number\]=$page_number" )
     count=$(echo "$response"|jq '.data | length')
     #echo "$response"|jq
     # Use jq to extract the desired values
