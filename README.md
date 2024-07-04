@@ -25,7 +25,7 @@ The basic use is as follows:
 
 `./createReports.sh -mode programName domain bug`
 
-Mode as 3 possible values
+Mode has 3 possible values:
 flag| Meaning  | Explanation |
 |---|---|---|
 -d | Dry-run mode| Won't make the API call at the end. Just to check parameters and request formation. 
@@ -73,15 +73,16 @@ I created [this](https://github.com/pdelteil/bugBountyTemplates) project with al
 - CVE-2020-3580
 - S3 takeover
 - XSS in Swagger UI
+- Azure Cloud App subdomain takeover
 
 ## Problems 
 
-- HackerOne's API documentation is awful. There are not many examples. I hate that. 
-- I still don't know how to inject markdown code into the template. 
-- I was using a dummy program in my primary account but then I couldn't remove the reports sent. I recommend you to create a dummy program in a secondary account. 
-- I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.
+- HackerOne's API documentation is awful. There are not many examples. I hate that.
 - Not all programs have the same weaknesses, you may encounter a 500 error if you send a weakness id that the program doesn't have (this is really silly).
+- ~~I still don't know how to inject markdown code into the template.~~
+- ~~I couldn't find a way to obtain the ids of weaknesses using the API. Withouth the ID you won't be able to submit the report. A way to get the ID is to use the filtering function on the HackerOne web site in your Inbox section. If you filter by weakness you will see the ID in the resulting the URL of the filter.~~
 
 ## TODO
 - Use yaml to define every type of bug. (Just like nuclei templates) 
 - Take screenshots of vulnerable URLS to be inclued in the reports. This could be solved using Google Photos API and then include the URL in the report.
+- Save an url using a web archive service and get the link to be added in the report. 
