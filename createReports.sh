@@ -1,8 +1,10 @@
 #in order to run this script properly you need to define your username and api keys in config.ini
 #using export username and apikey
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 #load credentials and other params
-source ./config.ini
+source $SCRIPT_DIR/config.ini
 
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
     echo -e "Use: \n -t test mode\n testing mode runs the API call against a testing program created in the sandbox\n ${BASH_SOURCE[0]} -t vulnerableDomain bug"
