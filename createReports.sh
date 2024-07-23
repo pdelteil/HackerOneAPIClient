@@ -212,4 +212,4 @@ echo "Making API call"
 echo "If error 500 check weakness"
 curl -s $apiEndpoint/reports -u "$username:$apikey" \
                   -H 'Content-Type: application/json' \
-                  -H 'Accept: application/json' -d "$data"|jq
+                  -H 'Accept: application/json' -d "$data"|jq -r '.data | "ID: \(.id)\nURL: https://hackerone.com/reports/\(.id)\nTitle: \(.attributes.title)\nCreated At: \(.attributes.created_at)"'
