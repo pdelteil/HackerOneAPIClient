@@ -120,10 +120,10 @@ elif [[ "$bug" == "s3takeover" ]]; then
 elif [[ "$bug" == "azure-dns" ]]; then
     pocDomain="poc.$domain"
     title='Azure DNS takeover ['$domain']'
-    bodySummary="Note: This is not a regular subdomain takeover but a NS/DNS takeover. \n\n A DNS takeover occurs when an attacker can take control of any DNS server in the chain of DNS servers responsible for resolving a hostname.\nThis was possible because the vulnerable zone/domain was pointing to Azure DNS service (using name servers  \`ns*-*.azure-dns.*\`) but the zone was not created.\n\nA bonus would be adviced, since performing this take over has a cost in Azure cloud. \n\n"
+    bodySummary="Note: This is not a regular subdomain takeover but a NS/DNS takeover. \n\n A DNS takeover occurs when an attacker can take control of any DNS server in the chain of DNS servers responsible for resolving a hostname.\nThis was possible because the vulnerable zone/domain was pointing to Azure DNS service (using name servers  \`ns*-*.azure-dns.*\`) but the zone was not created.\n\nA bonus would be advised, since performing this take over has a cost in Azure cloud. \n\n"
     bodyStepsToRep="## Steps To Reproduce\n\n In order to create the POC I added the subdomain \`poc\` to \`$domain\` with a TXT record.\n Run \`dig txt $pocDomain +noall +answer\`\n\nCheck the following output: \n\`$pocDomain 3600 IN TXT 'DNS Zone Takeover POC Deleite'\`\n\n A more impactful POC is possible registering a mail service using the subdomain."
     body="$bodySummary$bodyStepsToRep"
-    impact="The impact is high as an attacker could create any subdomain with any content. This would allow them to post malicious content which would be mistaken for a valid site.\nBecause the attacker controls de DNS manager, TXT and MX records can be created, therefore allowing the use of \`$domain\` as email sender. \nThreat actors could perform several attacks:\n\n  -  Cookie Stealing\n  -  Phishing campaigns.\n  -  Bypass Content-Security Policies and CORS."
+    impact="The impact is high as an attacker could create any subdomain with any content. This would allow them to post malicious content which would be mistaken for a valid site.\nBecause the attacker controls the DNS manager, TXT and MX records can be created, therefore allowing the use of \`$domain\` as email sender. \nThreat actors could perform several attacks:\n\n  -  Cookie Stealing\n  -  Phishing campaigns.\n  -  Bypass Content-Security Policies and CORS."
     severity="high"
     #misconfiguration (CWE-16)
     weaknessId=26
