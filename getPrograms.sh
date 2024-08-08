@@ -2,10 +2,10 @@
 
 source ./config.ini 
 
-#username=$usernameTesting
-#password=$apikeyTesting
-username=$usernameProduction
-password=$apikeyProduction
+username=$usernameTesting
+password=$apikeyTesting
+#username=$usernameProduction
+#password=$apikeyProduction
 page_size=100
 page_number=1
 total_sum=0

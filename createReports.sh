@@ -6,6 +6,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 #load credentials and other params
 source $SCRIPT_DIR/config.ini
 
+source ~/Bug-bounty-hunting-scripts/general_helper.sh
+
 if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
     echo -e "Use: \n -t test mode\n testing mode runs the API call against a testing program created in the sandbox\n ${BASH_SOURCE[0]} -t vulnerableDomain bug"
     #example
@@ -16,8 +18,16 @@ if [[ -z "$1" ]] || [[ -z "$2" ]] || [[ -z "$3" ]]; then
     #production mode runs the API call against your real account (be careful)
     # -p is production mode \n -d is dry run mode \n programName vulnerableDomain bug "
     #echo "Example {BASH_SOURCE[0]} att www.att.com [-t, -n, -d] CVE-2020-3580"
-    bugs="\nSupported bugs (bug_code): \n Cisco POST XSS (CVE-2020-3580)\n phpmyadmin CSRF (CVE-2019-12616)\n open redirect (open-redirect)\n \
-          generic xss (xss)\n s3 subdomain takeover (s3takeover)\n XSS Swagger UI (xssSwagger)\n Azure cloudapp subdomain takeover (azureCloudAppSto)\n Azure DNS Takeover (azure-dns)"
+    bugs="\nSupported bugs (bug_code): \n\
+            Cisco POST XSS (CVE-2020-3580)\n\
+            phpmyadmin CSRF (CVE-2019-12616)\n\
+            open redirect (open-redirect)\n\
+            generic xss (xss)\n\
+            s3 subdomain takeover (s3takeover)\n\
+            XSS Swagger UI (xssSwagger)\n\
+            Azure cloudapp subdomain takeover (azureCloudAppSto)\n\
+            Azure DNS Takeover (azure-dns)\n\
+            IP AWS Takeover (ip-aws)"
     echo -e $bugs
     exit 1
 fi
@@ -169,6 +179,34 @@ elif [[ "$bug" == "azureCloudAppSto" ]]; then
     impact="It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the vulnerable domain. This would allow them to post malicious content which would be mistaken for a valid site. \n They could perform several attacks like:\n - Cookie Stealing\n - Phishing campaigns. \n - Bypass Content-Security Policies and CORS." 
     severity="medium"
     weaknessId=26 
+
+#AWS Elastic IP subdomain takeover
+elif [[ "$bug" == "ip-aws" ]]; then
+
+    #input
+    if [[ -z "$5" ]]; then
+        echo "For this bug you need to include the POC URL"
+        exit 1
+    fi 
+    if [[ -z "$6" ]]; then
+        echo "For this bug you need to include the archive POC URL"
+        exit 1
+    fi
+ 
+    archivedURL=$5
+    cname=$6
+
+    url="https://$domain"
+    title='Subdomain takeover ['$domain']'    
+    IP=$(nslookup hello.masterclass.com|grep Address|grep -v 127|getField 2 ":" |tr -d ' ')
+    bodySummary="The subdomain \`$domain\` pointed to an Elastic IPv4 address assigned to an AWS EC2 instance that was terminated. This IP address (\`$IP\`) was released to the AWS Pool and I was able to take it over and assign it to new a EC2 instance. \n\n"
+    bodyStepsToRep="## Steps To Reproduce\n\n Go to this URL:\n$url\n\n You will see a page with proof of the take over. \n\nArchived version: $archivedURL"
+    body="$bodySummary$bodyStepsToRep"
+    impact="It's extremely vulnerable to attacks as a malicious user could create any web page with any content and host it on the vulnerable domain. This would allow them to post malicious content which would be mistaken for a valid site. \n They could perform several attacks like:\n - Cookie Stealing\n - Phishing campaigns. \n - Bypass Content-Security Policies and CORS." 
+    severity="high"
+    weaknessId=26 
+
+
 else
     echo "$bug, Bug type not found"
     exit 1 
@@ -187,10 +225,12 @@ data='{"data": {"type": "report",
 #dry run mode
 if [[ "$mode" == "-d" ]]; then
     echo "Running in dry-run mode"
-    echo $data|jq
+    echo -e $(echo $data|jq '.data.attributes.title as $title | "Title: \($title)"')
+    echo -e $(echo $data|jq '.data.attributes.vulnerability_information as $vuln_info| "Info: \($vuln_info)"')
+    echo -e $(echo $data|jq '.data.attributes.impact as $impact | "Impact: \($impact)"')
     #echo "reports URL from config.ini $reportsURL"
-    echo "Credentials: "$usernameTesting:$apikeyTesting
-    echo "Credentials: "$usernameProduction:$apikeyProduction
+    #echo "Credentials: "$usernameTesting:$apikeyTesting
+    #echo "Credentials: "$usernameProduction:$apikeyProduction
     exit 1
 fi
 
